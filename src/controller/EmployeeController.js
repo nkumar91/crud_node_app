@@ -1,5 +1,7 @@
 const EmployeeModel = require("../model/EmployeeModel")
 const axios = require('axios')
+const AppError = require("../utils/AppError")
+const uploadModel = require("../model/UploadModel")
 
 exports.addEmployee = async (request,response)=>{
     const reqData = request.body
@@ -102,4 +104,64 @@ exports.callApi = async (request,response)=>{
        if(res){
         response.json(res.data);
        }
+}
+
+
+exports.uploadFile = async (request,response,next)=>{
+    try{
+
+        const res = {
+            name:request.body.name,
+            image:request.imagePath,
+        }
+
+       const r =  await uploadModel.create(res);
+       if(r){
+        response.status(200).json({
+            status:"success",
+            message:"upload Successfully",
+            data:r
+        });
+       }
+
+       
+    }
+    catch(err){
+        next(
+            new AppError(500, "failed", "Internal Error"),
+            req,
+            res,
+            next,
+        );
+    }
+}
+
+
+exports.getAllImages = async (request,response,next)=>{
+    try{
+
+      
+
+       let r =  await uploadModel.find({});
+       r = r.map(ele=>{
+            ele.image = `http://localhost:8000/images/${ele.image}`
+            return ele;
+       }) 
+
+       response.json({
+        status:"success",
+        data:r
+       })
+       
+
+       
+    }
+    catch(err){
+        next(
+            new AppError(500, "failed", "Internal Error"),
+            req,
+            res,
+            next,
+        );
+    } 
 }

@@ -1,4 +1,5 @@
 exports.Collection = {
     crud:"crud",
-    auth:"auth"
+    auth:"auth",
+    upload:"upload"
 }
